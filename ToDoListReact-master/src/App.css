@@ -1,0 +1,266 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  direction: rtl;
+}
+
+.app-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.auth-container {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  margin-top: 100px;
+}
+
+.auth-container h2 {
+  text-align: center;
+  color: #667eea;
+  margin-bottom: 30px;
+  font-size: 2rem;
+}
+
+.error-message {
+  background: #ffe5e5;
+  color: #d8000c;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+  border: 1px solid #d8000c;
+}
+
+.success-message {
+  background: #d4edda;
+  color: #155724;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+  border: 1px solid #c3e6cb;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-input {
+  padding: 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 16px;
+  transition: all 0.3s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.switch-auth {
+  text-align: center;
+  margin-top: 20px;
+  color: #666;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #667eea;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: underline;
+  padding: 5px 10px;
+}
+
+.btn-link:hover {
+  color: #764ba2;
+}
+
+/* Todos Screen */
+.todos-container {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  margin-top: 20px;
+}
+
+.todos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.todos-header h2 {
+  color: #667eea;
+  font-size: 2rem;
+}
+
+.btn-logout {
+  background: #ff4757;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.btn-logout:hover {
+  background: #ee5a6f;
+  transform: translateY(-2px);
+}
+
+.add-todo-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.add-todo-input {
+  flex: 1;
+  padding: 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+.add-todo-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.btn-add {
+  background: #2ed573;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-add:hover {
+  background: #26de81;
+  transform: translateY(-2px);
+}
+
+.todos-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  transition: all 0.3s;
+}
+
+.todo-item:hover {
+  background: #e9ecef;
+  transform: translateX(-5px);
+}
+
+.todo-checkbox {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  accent-color: #667eea;
+}
+
+.todo-text {
+  flex: 1;
+  font-size: 16px;
+  color: #333;
+}
+
+.todo-text.completed {
+  text-decoration: line-through;
+  color: #999;
+}
+
+.btn-delete {
+  background: #ff4757;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-delete:hover {
+  background: #ee5a6f;
+  transform: scale(1.05);
+}
+
+.btn-delete:active {
+  transform: scale(0.95);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+}
+
+.empty-state-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+.empty-state-text {
+  font-size: 1.2rem;
+}
+
