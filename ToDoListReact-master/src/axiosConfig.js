@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // לוקח את כתובת ה־API מה־Environment של Render
 // ב-Render Static Site, משתני סביבה לא תמיד מועברים ל-Build
-// לכן משתמשים בערך ישיר - FIXED VERSION
+// לכן משתמשים בערך ישיר - FIXED VERSION 2
 const API_URL = 'https://todoapis-qdh6.onrender.com';
 
 // Debug logs
