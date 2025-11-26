@@ -2,12 +2,15 @@ import axios from 'axios';
 
 // לוקח את כתובת ה־API מה־Environment של Render
 // ב-Render Static Site, משתני סביבה לא תמיד מועברים ל-Build
-// לכן משתמשים בערך ישיר (זמני - לבדיקה)
-// TODO: לחזור ל-process.env.REACT_APP_API_URL אחרי שתתוקן הבעיה ב-Render
+// לכן משתמשים בערך ישיר
 const API_URL = 'https://todoapis-qdh6.onrender.com';
 
-console.log("Loaded API URL:", API_URL); // בדיקה חשובה בענן
-console.log("REACT_APP_API_URL from env:", process.env.REACT_APP_API_URL); // דיבוג
+// Debug logs
+console.log("=== API CONFIG DEBUG ===");
+console.log("API_URL constant:", API_URL);
+console.log("REACT_APP_API_URL from env:", process.env.REACT_APP_API_URL);
+console.log("Final API URL:", API_URL);
+console.log("========================");
 
 // יוצר מופע axios עם baseURL קבוע לשרת של ה־API
 const instance = axios.create({
