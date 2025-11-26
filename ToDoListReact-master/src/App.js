@@ -55,9 +55,10 @@ function App() {
   const getTodos = async () => {
     try {
       const data = await service.getTasks();
-      setTodos(data);
+      setTodos(data || []);
     } catch (err) {
-      console.log(err);
+      console.error("Get todos error:", err);
+      setTodos([]);
     }
   };
 
@@ -65,19 +66,34 @@ function App() {
   const addTodo = async (e) => {
     e.preventDefault();
     if (!newTodo) return;
-    await service.addTask(newTodo);
-    setNewTodo("");
-    getTodos();
+    try {
+      await service.addTask(newTodo);
+      setNewTodo("");
+      getTodos();
+    } catch (error) {
+      console.error("Add todo error:", error);
+      setErrorMessage("שגיאה בהוספת משימה: " + (error.response?.data || error.message));
+    }
   };
 
   const toggleComplete = async (todo) => {
-    await service.setCompleted(todo.id, todo.name, !todo.isComplete);
-    getTodos();
+    try {
+      await service.setCompleted(todo.id, todo.name, !todo.isComplete);
+      getTodos();
+    } catch (error) {
+      console.error("Toggle complete error:", error);
+      setErrorMessage("שגיאה בעדכון משימה: " + (error.response?.data || error.message));
+    }
   };
 
   const deleteTodo = async (id) => {
-    await service.deleteTask(id);
-    getTodos();
+    try {
+      await service.deleteTask(id);
+      getTodos();
+    } catch (error) {
+      console.error("Delete todo error:", error);
+      setErrorMessage("שגיאה במחיקת משימה: " + (error.response?.data || error.message));
+    }
   };
 
   useEffect(() => {

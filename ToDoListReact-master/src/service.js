@@ -66,7 +66,6 @@ export default {
       return result.data;
     } catch (error) {
       handleError(error);
-      throw error;
     }
   },
 
@@ -77,7 +76,6 @@ export default {
       return result.data;
     } catch (error) {
       handleError(error);
-      throw error;
     }
   },
 
@@ -87,7 +85,6 @@ export default {
       return result.data;
     } catch (error) {
       handleError(error);
-      throw error;
     }
   },
 
@@ -96,7 +93,6 @@ export default {
       await axios.delete(`https://todoapis-qdh6.onrender.com/tasks/${id}`, getConfig());
     } catch (error) {
       handleError(error);
-      throw error;
     }
   }
 };
