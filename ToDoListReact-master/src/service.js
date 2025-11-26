@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-// URL של ה-API - FIXED FOR RENDER
-const API_URL = 'https://todoapis-qdh6.onrender.com';
+// URL של ה-API - FIXED FOR RENDER - ישירות בכל קריאה
 
 // פונקציה עזר ליצירת config עם JWT
 const getConfig = () => {
@@ -36,7 +35,7 @@ export default {
   // =====================
   register: async (username, password) => {
     try {
-      const result = await axios.post(`${API_URL}/register`, { username, passwordHash: password }, getConfig());
+      const result = await axios.post('https://todoapis-qdh6.onrender.com/register', { username, passwordHash: password }, getConfig());
       return result.data;
     } catch (error) {
       return handleError(error);
@@ -45,7 +44,7 @@ export default {
 
   login: async (username, password) => {
     try {
-      const result = await axios.post(`${API_URL}/login`, { username, password }, getConfig());
+      const result = await axios.post('https://todoapis-qdh6.onrender.com/login', { username, password }, getConfig());
       const token = result.data.token;
       localStorage.setItem('jwt', token);
       return token;
@@ -63,7 +62,7 @@ export default {
   // =====================
   getTasks: async () => {
     try {
-      const result = await axios.get(`${API_URL}/tasks`, getConfig());
+      const result = await axios.get('https://todoapis-qdh6.onrender.com/tasks', getConfig());
       return result.data;
     } catch (error) {
       return handleError(error);
@@ -73,7 +72,7 @@ export default {
   
   addTask: async (name) => {
     try {
-      const result = await axios.post(`${API_URL}/tasks`, { name, isComplete: false }, getConfig());
+      const result = await axios.post('https://todoapis-qdh6.onrender.com/tasks', { name, isComplete: false }, getConfig());
       return result.data;
     } catch (error) {
       return handleError(error);
@@ -82,7 +81,7 @@ export default {
 
   setCompleted: async (id, name, isComplete) => {
     try {
-      const result = await axios.put(`${API_URL}/tasks/${id}`, { id, name, isComplete }, getConfig());
+      const result = await axios.put(`https://todoapis-qdh6.onrender.com/tasks/${id}`, { id, name, isComplete }, getConfig());
       return result.data;
     } catch (error) {
       return handleError(error);
@@ -91,7 +90,7 @@ export default {
 
   deleteTask: async (id) => {
     try {
-      await axios.delete(`${API_URL}/tasks/${id}`, getConfig());
+      await axios.delete(`https://todoapis-qdh6.onrender.com/tasks/${id}`, getConfig());
     } catch (error) {
       return handleError(error);
     }
