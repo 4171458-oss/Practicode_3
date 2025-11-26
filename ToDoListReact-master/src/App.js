@@ -16,29 +16,34 @@ function App() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMessage("");
+    console.log('🔐 HANDLE LOGIN - Starting login for:', username);
     try {
-      
-      await service.login(username, password);
+      const token = await service.login(username, password);
+      console.log('✅ HANDLE LOGIN - Login successful! Token received:', !!token);
       setUserLoggedIn(true);
       setCurrentScreen("todos");
     } catch (error) {
-      console.error("Login error:", error);
-      setErrorMessage("שם משתמש או סיסמה שגויים: " + (error.response?.data || error.message));
+      console.error("❌ HANDLE LOGIN - Login failed:", error);
+      console.error("❌ HANDLE LOGIN - Error details:", error.response?.data);
+      setErrorMessage("שם משתמש או סיסמה שגויים: " + (error.response?.data?.message || error.response?.data || error.message));
     }
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setErrorMessage("");
+    console.log('📝 HANDLE REGISTER - Starting registration for:', username);
     try {
-      await service.register(username, password);
+      const result = await service.register(username, password);
+      console.log('✅ HANDLE REGISTER - Registration successful! Result:', result);
       setErrorMessage("הרשמה הצליחה! התחברי עכשיו");
       setCurrentScreen("login");
       setUsername("");
       setPassword("");
     } catch (error) {
-      console.error("Register error:", error);
-      setErrorMessage("הרשמה נכשלה: " + (error.response?.data || error.message));
+      console.error("❌ HANDLE REGISTER - Registration failed:", error);
+      console.error("❌ HANDLE REGISTER - Error details:", error.response?.data);
+      setErrorMessage("הרשמה נכשלה: " + (error.response?.data?.message || error.response?.data || error.message));
     }
   };
 
@@ -49,6 +54,7 @@ function App() {
     setUsername("");
     setPassword("");
     setTodos([]);
+    setErrorMessage(""); // מנקים הודעות שגיאה
   };
 
   // ===================== TODOS =====================
@@ -64,21 +70,35 @@ function App() {
       }
     } catch (err) {
       console.error("Get todos error:", err);
-      setTodos([]);
+      // אם זו שגיאת 401, מעבירים לדף התחברות
+      if (err.response && err.response.status === 401) {
+        setCurrentScreen("login");
+        setErrorMessage("ההתחברות פגה. נא להתחבר מחדש");
+        setTodos([]);
+      } else {
+        setTodos([]);
+        setErrorMessage("שגיאה בטעינת המשימות: " + (err.response?.data?.message || err.message));
+      }
     }
   };
 
   
   const addTodo = async (e) => {
     e.preventDefault();
-    if (!newTodo) return;
+    if (!newTodo.trim()) return; // בדיקה שהשדה לא ריק
+    const todoToAdd = newTodo.trim(); // שמירה של הערך לפני הניקוי
+    setNewTodo(""); // מנקים את השדה מיד (UX טוב יותר)
     try {
-      await service.addTask(newTodo);
-      setNewTodo("");
-      getTodos();
+      await service.addTask(todoToAdd);
+      await getTodos(); // מחכים שהמשימה תתווסף לפני רענון
     } catch (error) {
       console.error("Add todo error:", error);
-      setErrorMessage("שגיאה בהוספת משימה: " + (error.response?.data || error.message));
+      setNewTodo(todoToAdd); // מחזירים את הערך לשדה אם יש שגיאה
+      setErrorMessage("שגיאה בהוספת משימה: " + (error.response?.data?.message || error.response?.data || error.message));
+      // אם זו שגיאת 401, מעבירים לדף התחברות
+      if (error.response && error.response.status === 401) {
+        setCurrentScreen("login");
+      }
     }
   };
 
@@ -102,8 +122,18 @@ function App() {
     }
   };
 
+  // בדיקה אם המשתמש מחובר וטעינת משימות
   useEffect(() => {
-    if (currentScreen === "todos") getTodos();
+    if (currentScreen === "todos") {
+      const token = localStorage.getItem('jwt');
+      if (token) {
+        getTodos();
+      } else {
+        // אם אין JWT אבל המשתמש מנסה לגשת למשימות, מעבירים לדף התחברות
+        setCurrentScreen("login");
+        setErrorMessage("נא להתחבר כדי לראות את המשימות");
+      }
+    }
   }, [currentScreen]);
 
   // ===================== RENDER =====================
@@ -184,6 +214,44 @@ function App() {
   }
 
   // ===================== TODOS SCREEN =====================
+  // בדיקה נוספת - אם אין JWT, לא מציגים את המסך
+  const token = localStorage.getItem('jwt');
+  if (!token) {
+    return (
+      <div className="app-container">
+        <div className="auth-container">
+          <h2>🔐 התחברות</h2>
+          <div className="error-message">נא להתחבר כדי לראות את המשימות</div>
+          <form onSubmit={handleLogin} className="auth-form">
+            <input 
+              type="text" 
+              placeholder="שם משתמש" 
+              value={username} 
+              onChange={e => setUsername(e.target.value)} 
+              required 
+              className="form-input"
+            />
+            <input 
+              type="password" 
+              placeholder="סיסמה" 
+              value={password} 
+              onChange={e => setPassword(e.target.value)} 
+              required 
+              className="form-input"
+            />
+            <button type="submit" className="btn-primary">התחבר</button>
+          </form>
+          <div className="switch-auth">
+            אין לך חשבון? 
+            <button onClick={() => { setCurrentScreen("register"); setErrorMessage(""); }} className="btn-link">
+              הירשם כאן
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="app-container">
       <div className="todos-container">
@@ -191,6 +259,7 @@ function App() {
           <h2>📋 המשימות שלי</h2>
           <button onClick={handleLogout} className="btn-logout">התנתק</button>
         </div>
+        {errorMessage && <div className="error-message">{errorMessage}</div>}
         
         <form onSubmit={addTodo} className="add-todo-form">
           <input 
