@@ -9,7 +9,7 @@ function App() {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [todos, setTodos] = useState([]);
+  const [todos, setTodos] = useState([]); // תמיד מערך
   const [newTodo, setNewTodo] = useState("");
 
   // ===================== AUTH =====================
@@ -197,7 +197,7 @@ function App() {
           <button type="submit" className="btn-add">➕ הוסף</button>
         </form>
         
-        {todos.length === 0 ? (
+        {!Array.isArray(todos) || todos.length === 0 ? (
           <div className="empty-state">
             <div className="empty-state-icon">📝</div>
             <div className="empty-state-text">אין משימות עדיין. תתחיל להוסיף!</div>

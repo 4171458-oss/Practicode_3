@@ -63,9 +63,10 @@ export default {
   getTasks: async () => {
     try {
       const result = await axios.get('https://todoapis-qdh6.onrender.com/tasks', getConfig());
-      return result.data;
+      return Array.isArray(result.data) ? result.data : [];
     } catch (error) {
       handleError(error);
+      return []; // אם יש שגיאה, מחזירים מערך ריק
     }
   },
 
