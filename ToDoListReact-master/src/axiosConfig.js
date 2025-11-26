@@ -1,7 +1,10 @@
 import axios from 'axios';
 
 // לוקח את כתובת ה־API מה־Environment של Render
-const API_URL = process.env.REACT_APP_API_URL || 'https://todoapis-qdh6.onrender.com';
+// ב-Render Static Site, משתני סביבה לא תמיד מועברים ל-Build
+// לכן משתמשים בערך ישיר (זמני - לבדיקה)
+// TODO: לחזור ל-process.env.REACT_APP_API_URL אחרי שתתוקן הבעיה ב-Render
+const API_URL = 'https://todoapis-qdh6.onrender.com';
 
 console.log("Loaded API URL:", API_URL); // בדיקה חשובה בענן
 console.log("REACT_APP_API_URL from env:", process.env.REACT_APP_API_URL); // דיבוג
@@ -20,6 +23,7 @@ instance.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  
   return config;
 });
 
