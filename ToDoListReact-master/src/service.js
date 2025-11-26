@@ -38,7 +38,7 @@ export default {
       const result = await axios.post('https://todoapis-qdh6.onrender.com/register', { username, passwordHash: password }, getConfig());
       return result.data;
     } catch (error) {
-      return handleError(error);
+      handleError(error);
     }
   },
 
@@ -49,7 +49,7 @@ export default {
       localStorage.setItem('jwt', token);
       return token;
     } catch (error) {
-      return handleError(error);
+      handleError(error);
     }
   },
 
@@ -65,7 +65,8 @@ export default {
       const result = await axios.get('https://todoapis-qdh6.onrender.com/tasks', getConfig());
       return result.data;
     } catch (error) {
-      return handleError(error);
+      handleError(error);
+      throw error;
     }
   },
 
@@ -75,7 +76,8 @@ export default {
       const result = await axios.post('https://todoapis-qdh6.onrender.com/tasks', { name, isComplete: false }, getConfig());
       return result.data;
     } catch (error) {
-      return handleError(error);
+      handleError(error);
+      throw error;
     }
   },
 
@@ -84,7 +86,8 @@ export default {
       const result = await axios.put(`https://todoapis-qdh6.onrender.com/tasks/${id}`, { id, name, isComplete }, getConfig());
       return result.data;
     } catch (error) {
-      return handleError(error);
+      handleError(error);
+      throw error;
     }
   },
 
@@ -92,7 +95,8 @@ export default {
     try {
       await axios.delete(`https://todoapis-qdh6.onrender.com/tasks/${id}`, getConfig());
     } catch (error) {
-      return handleError(error);
+      handleError(error);
+      throw error;
     }
   }
 };
