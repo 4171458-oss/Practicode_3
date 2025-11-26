@@ -2,11 +2,26 @@ import axios from 'axios';
 
 // URL של ה-API - משתמש במשתנה סביבה לפי המטלה
 // ב-create-react-app משתני סביבה חייבים להתחיל ב-REACT_APP_
-const API_URL = process.env.REACT_APP_API_URL || 'https://todoapis-qdh6.onrender.com';
+// IMPORTANT: ב-Render, משתני סביבה נטמעים רק בזמן ה-build
+// אם המשתנה לא מוגדר, נשתמש ב-URL ישיר
+const API_URL_DEFAULT = 'https://todoapis-qdh6.onrender.com';
+
+// בדיקה אם המשתנה קיים ולא ריק
+// שימוש ב-IIFE כדי לוודא שהערך נטמע ב-build
+const FINAL_API_URL = (function() {
+  const envUrl = process.env.REACT_APP_API_URL;
+  // אם המשתנה קיים ולא ריק, משתמשים בו
+  if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '' && envUrl !== 'undefined' && envUrl !== 'null') {
+    return envUrl.trim();
+  }
+  // אחרת, משתמשים ב-URL ברירת מחדל
+  return API_URL_DEFAULT;
+})();
 
 // Debug - הדפסת ה-API URL
-console.log('🌐 API CONFIG - API_URL:', API_URL);
 console.log('🌐 API CONFIG - REACT_APP_API_URL from env:', process.env.REACT_APP_API_URL);
+console.log('🌐 API CONFIG - FINAL_API_URL (will be used):', FINAL_API_URL);
+console.log('🌐 API CONFIG - API_URL_DEFAULT:', API_URL_DEFAULT);
 
 // פונקציה עזר ליצירת config עם JWT
 const getConfig = () => {
@@ -41,11 +56,12 @@ export default {
   // =====================
   register: async (username, password) => {
     try {
-      console.log('🔵 REGISTER - Sending request to:', `${API_URL}/register`);
+      const url = `${FINAL_API_URL}/register`;
+      console.log('🔵 REGISTER - Sending request to:', url);
       console.log('🔵 REGISTER - Username:', username);
       console.log('🔵 REGISTER - Payload:', { username, passwordHash: password });
       
-      const result = await axios.post(`${API_URL}/register`, { username, passwordHash: password }, getConfig());
+      const result = await axios.post(url, { username, passwordHash: password }, getConfig());
       
       console.log('🟢 REGISTER - Success! Response:', result.data);
       console.log('🟢 REGISTER - Status:', result.status);
@@ -61,14 +77,22 @@ export default {
 
   login: async (username, password) => {
     try {
-      console.log('🔵 LOGIN - Sending request to:', `${API_URL}/login`);
+      const url = `${FINAL_API_URL}/login`;
+      console.log('🔵 LOGIN - Sending request to:', url);
       console.log('🔵 LOGIN - Username:', username);
       console.log('🔵 LOGIN - Payload:', { username, password: '***' });
       
-      const result = await axios.post(`${API_URL}/login`, { username, password }, getConfig());
+      const result = await axios.post(url, { username, password }, getConfig());
       
       console.log('🟢 LOGIN - Success! Status:', result.status);
+      console.log('🟢 LOGIN - Full response:', result.data);
       console.log('🟢 LOGIN - Has token:', !!result.data.token);
+      console.log('🟢 LOGIN - Token value:', result.data.token);
+      
+      if (!result.data.token) {
+        console.error('🔴 LOGIN - No token in response!');
+        throw new Error('No token received from server');
+      }
       
       const token = result.data.token;
       localStorage.setItem('jwt', token);
@@ -92,11 +116,12 @@ export default {
   // =====================
   getTasks: async () => {
     try {
-      console.log('🔵 GET TASKS - Sending request to:', `${API_URL}/tasks`);
+      const url = `${FINAL_API_URL}/tasks`;
+      console.log('🔵 GET TASKS - Sending request to:', url);
       const token = localStorage.getItem('jwt');
       console.log('🔵 GET TASKS - Has token:', !!token);
       
-      const result = await axios.get(`${API_URL}/tasks`, getConfig());
+      const result = await axios.get(url, getConfig());
       
       console.log('🟢 GET TASKS - Success! Status:', result.status);
       console.log('🟢 GET TASKS - Data type:', Array.isArray(result.data) ? 'Array' : typeof result.data);
@@ -127,11 +152,12 @@ export default {
   
   addTask: async (name) => {
     try {
-      console.log('🔵 ADD TASK - Sending request to:', `${API_URL}/tasks`);
+      const url = `${FINAL_API_URL}/tasks`;
+      console.log('🔵 ADD TASK - Sending request to:', url);
       console.log('🔵 ADD TASK - Task name:', name);
       console.log('🔵 ADD TASK - Payload:', { name, isComplete: false });
       
-      const result = await axios.post(`${API_URL}/tasks`, { name, isComplete: false }, getConfig());
+      const result = await axios.post(url, { name, isComplete: false }, getConfig());
       
       console.log('🟢 ADD TASK - Success! Status:', result.status);
       console.log('🟢 ADD TASK - Created task:', result.data);
@@ -147,7 +173,7 @@ export default {
 
   setCompleted: async (id, name, isComplete) => {
     try {
-      const result = await axios.put(`${API_URL}/tasks/${id}`, { id, name, isComplete }, getConfig());
+      const result = await axios.put(`${FINAL_API_URL}/tasks/${id}`, { id, name, isComplete }, getConfig());
       return result.data;
     } catch (error) {
       handleError(error);
@@ -156,7 +182,7 @@ export default {
 
   deleteTask: async (id) => {
     try {
-      await axios.delete(`${API_URL}/tasks/${id}`, getConfig());
+      await axios.delete(`${FINAL_API_URL}/tasks/${id}`, getConfig());
     } catch (error) {
       handleError(error);
     }
