@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "gOUvNvFifQ4=",
+  "dgSpecHash": "t/HrdPd3vAQ=",
   "success": true,
-  "projectFilePath": "C:\\Users\\user1\\Desktop\\תכנות-שנה ב\\פרקטיקוד\\3\\ToDoApi\\TodoApi.csproj",
+  "projectFilePath": "C:\\Users\\user1\\Desktop\\תכנות-שנה ב\\פרקטיקוד\\4\\TodoApi\\TodoApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\user1\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\user1\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
@@ -63,10 +63,10 @@
     "C:\\Users\\user1\\.nuget\\packages\\system.text.encodings.web\\9.0.10\\system.text.encodings.web.9.0.10.nupkg.sha512",
     "C:\\Users\\user1\\.nuget\\packages\\system.text.json\\9.0.10\\system.text.json.9.0.10.nupkg.sha512",
     "C:\\Users\\user1\\.nuget\\packages\\system.threading.channels\\7.0.0\\system.threading.channels.7.0.0.nupkg.sha512",
-    "C:\\Users\\user1\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.21\\microsoft.aspnetcore.app.ref.8.0.21.nupkg.sha512",
-    "C:\\Users\\user1\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.21\\microsoft.netcore.app.host.win-x64.8.0.21.nupkg.sha512",
     "C:\\Users\\user1\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.21\\microsoft.netcore.app.ref.8.0.21.nupkg.sha512",
-    "C:\\Users\\user1\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.21\\microsoft.windowsdesktop.app.ref.8.0.21.nupkg.sha512"
+    "C:\\Users\\user1\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.21\\microsoft.windowsdesktop.app.ref.8.0.21.nupkg.sha512",
+    "C:\\Users\\user1\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.21\\microsoft.aspnetcore.app.ref.8.0.21.nupkg.sha512",
+    "C:\\Users\\user1\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.21\\microsoft.netcore.app.host.win-x64.8.0.21.nupkg.sha512"
   ],
   "logs": []
 }
