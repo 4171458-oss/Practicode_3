@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // לוקח את כתובת ה־API מה־Environment של Render
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5098';
 
 console.log("Loaded API URL:", API_URL); // בדיקה חשובה בענן
 
@@ -21,5 +21,22 @@ instance.interceptors.request.use((config) => {
   }
   return config;
 });
+
+// טיפול בשגיאות
+instance.interceptors.response.use(
+  response => response,
+  error => {
+    console.error('API Error:', error.response?.data || error.message);
+    
+    if (error.response && error.response.status === 401) {
+      // אם יש שגיאת 401, מנקים את ה-JWT ומעבירים לדף התחברות
+      localStorage.removeItem('jwt');
+      if (window.location.pathname !== '/') {
+        window.location.href = '/';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default instance;

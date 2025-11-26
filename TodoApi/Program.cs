@@ -64,8 +64,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
-
 // =====================
 // Tasks endpoints
 // =====================
