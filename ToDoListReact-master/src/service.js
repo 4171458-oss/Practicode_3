@@ -63,10 +63,23 @@ export default {
   getTasks: async () => {
     try {
       const result = await axios.get('https://todoapis-qdh6.onrender.com/tasks', getConfig());
-      return Array.isArray(result.data) ? result.data : [];
+      // וודא שהתוצאה היא מערך
+      if (Array.isArray(result.data)) {
+        return result.data;
+      }
+      // אם זה לא מערך, נחזיר מערך ריק
+      return [];
     } catch (error) {
-      handleError(error);
-      return []; // אם יש שגיאה, מחזירים מערך ריק
+      console.error('Get tasks error:', error.response?.data || error.message);
+      // אם יש שגיאת 401, נטפל בה אבל לא נזרוק שגיאה
+      if (error.response && error.response.status === 401) {
+        localStorage.removeItem('jwt');
+        if (window.location.pathname !== '/') {
+          window.location.href = '/';
+        }
+      }
+      // תמיד מחזירים מערך ריק במקום לזרוק שגיאה
+      return [];
     }
   },
 

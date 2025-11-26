@@ -9,7 +9,7 @@ function App() {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [todos, setTodos] = useState([]); // תמיד מערך
+  const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState("");
 
   // ===================== AUTH =====================
@@ -55,7 +55,13 @@ function App() {
   const getTodos = async () => {
     try {
       const data = await service.getTasks();
-      setTodos(data || []);
+      // וודא שזה תמיד מערך
+      if (Array.isArray(data)) {
+        setTodos(data);
+      } else {
+        console.warn("getTasks returned non-array:", data);
+        setTodos([]);
+      }
     } catch (err) {
       console.error("Get todos error:", err);
       setTodos([]);
