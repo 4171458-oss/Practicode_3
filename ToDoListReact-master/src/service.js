@@ -1,36 +1,33 @@
 import axios from 'axios';
 
-// הגדרת axios עם baseURL ישיר - FIXED FOR RENDER
-const apiClient = axios.create({
-  baseURL: 'https://todoapis-qdh6.onrender.com',
-  headers: {
-    'Content-Type': 'application/json'
-  }
-});
+// URL של ה-API - FIXED FOR RENDER
+const API_URL = 'https://todoapis-qdh6.onrender.com';
 
-// מזריק JWT אוטומטית
-apiClient.interceptors.request.use((config) => {
+// פונקציה עזר ליצירת config עם JWT
+const getConfig = () => {
   const token = localStorage.getItem('jwt');
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
-});
+};
 
-// טיפול בשגיאות
-apiClient.interceptors.response.use(
-  response => response,
-  error => {
-    console.error('API Error:', error.response?.data || error.message);
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem('jwt');
-      if (window.location.pathname !== '/') {
-        window.location.href = '/';
-      }
+// פונקציה עזר לטיפול בשגיאות
+const handleError = (error) => {
+  console.error('API Error:', error.response?.data || error.message);
+  if (error.response && error.response.status === 401) {
+    localStorage.removeItem('jwt');
+    if (window.location.pathname !== '/') {
+      window.location.href = '/';
     }
-    return Promise.reject(error);
   }
-);
+  throw error;
+};
 
 
 export default {
@@ -38,15 +35,23 @@ export default {
   // Auth
   // =====================
   register: async (username, password) => {
-    const result = await apiClient.post('/register', { username, passwordHash: password });
-    return result.data;
+    try {
+      const result = await axios.post(`${API_URL}/register`, { username, passwordHash: password }, getConfig());
+      return result.data;
+    } catch (error) {
+      return handleError(error);
+    }
   },
 
   login: async (username, password) => {
-    const result = await apiClient.post('/login', { username, password });
-    const token = result.data.token;
-    localStorage.setItem('jwt', token); // שמירת JWT ב-localStorage
-    return token;
+    try {
+      const result = await axios.post(`${API_URL}/login`, { username, password }, getConfig());
+      const token = result.data.token;
+      localStorage.setItem('jwt', token);
+      return token;
+    } catch (error) {
+      return handleError(error);
+    }
   },
 
   logout: () => {
@@ -57,22 +62,38 @@ export default {
   // Tasks
   // =====================
   getTasks: async () => {
-    const result = await apiClient.get('/tasks');
-    return result.data;
+    try {
+      const result = await axios.get(`${API_URL}/tasks`, getConfig());
+      return result.data;
+    } catch (error) {
+      return handleError(error);
+    }
   },
 
   
   addTask: async (name) => {
-    const result = await apiClient.post('/tasks', { name, isComplete: false });
-    return result.data;
+    try {
+      const result = await axios.post(`${API_URL}/tasks`, { name, isComplete: false }, getConfig());
+      return result.data;
+    } catch (error) {
+      return handleError(error);
+    }
   },
 
   setCompleted: async (id, name, isComplete) => {
-    const result = await apiClient.put(`/tasks/${id}`, { id, name, isComplete });
-    return result.data;
+    try {
+      const result = await axios.put(`${API_URL}/tasks/${id}`, { id, name, isComplete }, getConfig());
+      return result.data;
+    } catch (error) {
+      return handleError(error);
+    }
   },
 
   deleteTask: async (id) => {
-    await apiClient.delete(`/tasks/${id}`);
+    try {
+      await axios.delete(`${API_URL}/tasks/${id}`, getConfig());
+    } catch (error) {
+      return handleError(error);
+    }
   }
 };
