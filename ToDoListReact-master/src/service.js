@@ -3,25 +3,22 @@ import axios from 'axios';
 // URL של ה-API - משתמש במשתנה סביבה לפי המטלה
 // ב-create-react-app משתני סביבה חייבים להתחיל ב-REACT_APP_
 // IMPORTANT: ב-Render, משתני סביבה נטמעים רק בזמן ה-build
+// FIX: משתמשים ב-URL ישיר כדי להבטיח שהוא תמיד נטמע ב-build
 // אם המשתנה לא מוגדר, נשתמש ב-URL ישיר
 const API_URL_DEFAULT = 'https://todoapis-qdh6.onrender.com';
 
 // בדיקה אם המשתנה קיים ולא ריק
-// שימוש ב-IIFE כדי לוודא שהערך נטמע ב-build
-const FINAL_API_URL = (function() {
-  const envUrl = process.env.REACT_APP_API_URL;
-  // אם המשתנה קיים ולא ריק, משתמשים בו
-  if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '' && envUrl !== 'undefined' && envUrl !== 'null') {
-    return envUrl.trim();
-  }
-  // אחרת, משתמשים ב-URL ברירת מחדל
-  return API_URL_DEFAULT;
-})();
+// CRITICAL FIX: משתמשים ב-URL ישיר כדי להבטיח שהוא תמיד נטמע ב-build
+// ב-Render, אם המשתנה לא מוגדר בזמן ה-build, הוא לא נטמע
+// לכן, נשתמש ב-URL ישיר בקוד
+const FINAL_API_URL = 'https://todoapis-qdh6.onrender.com';
 
 // Debug - הדפסת ה-API URL
 console.log('🌐 API CONFIG - REACT_APP_API_URL from env:', process.env.REACT_APP_API_URL);
 console.log('🌐 API CONFIG - FINAL_API_URL (will be used):', FINAL_API_URL);
 console.log('🌐 API CONFIG - API_URL_DEFAULT:', API_URL_DEFAULT);
+console.log('🌐 API CONFIG - FINAL_API_URL type:', typeof FINAL_API_URL);
+console.log('🌐 API CONFIG - FINAL_API_URL length:', FINAL_API_URL ? FINAL_API_URL.length : 0);
 
 // פונקציה עזר ליצירת config עם JWT
 const getConfig = () => {
@@ -85,9 +82,12 @@ export default {
       const result = await axios.post(url, { username, password }, getConfig());
       
       console.log('🟢 LOGIN - Success! Status:', result.status);
-      console.log('🟢 LOGIN - Full response:', result.data);
-      console.log('🟢 LOGIN - Has token:', !!result.data.token);
-      console.log('🟢 LOGIN - Token value:', result.data.token);
+      console.log('🟢 LOGIN - Full response object:', result);
+      console.log('🟢 LOGIN - Full response.data:', result.data);
+      console.log('🟢 LOGIN - Response.data type:', typeof result.data);
+      console.log('🟢 LOGIN - Response.data keys:', result.data ? Object.keys(result.data) : 'null/undefined');
+      console.log('🟢 LOGIN - Has token:', !!result.data?.token);
+      console.log('🟢 LOGIN - Token value:', result.data?.token);
       
       if (!result.data.token) {
         console.error('🔴 LOGIN - No token in response!');
