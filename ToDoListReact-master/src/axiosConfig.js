@@ -1,9 +1,10 @@
 import axios from 'axios';
 
 // לוקח את כתובת ה־API מה־Environment של Render
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5098';
+const API_URL = process.env.REACT_APP_API_URL || 'https://todoapis-qdh6.onrender.com';
 
 console.log("Loaded API URL:", API_URL); // בדיקה חשובה בענן
+console.log("REACT_APP_API_URL from env:", process.env.REACT_APP_API_URL); // דיבוג
 
 // יוצר מופע axios עם baseURL קבוע לשרת של ה־API
 const instance = axios.create({
