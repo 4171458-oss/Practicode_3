@@ -53,8 +53,10 @@ export default {
   // =====================
   register: async (username, password) => {
     try {
-      const url = `${FINAL_API_URL}/register`;
+      // CRITICAL FIX: שימוש ב-URL ישיר כדי להבטיח שהוא נטמע ב-build
+      const url = 'https://todoapis-qdh6.onrender.com/register';
       console.log('🔵 REGISTER - Sending request to:', url);
+      console.log('🔵 REGISTER - FINAL_API_URL variable:', FINAL_API_URL);
       console.log('🔵 REGISTER - Username:', username);
       console.log('🔵 REGISTER - Payload:', { username, passwordHash: password });
       
@@ -74,20 +76,41 @@ export default {
 
   login: async (username, password) => {
     try {
-      const url = `${FINAL_API_URL}/login`;
+      // CRITICAL FIX: שימוש ב-URL ישיר כדי להבטיח שהוא נטמע ב-build
+      const url = 'https://todoapis-qdh6.onrender.com/login';
       console.log('🔵 LOGIN - Sending request to:', url);
+      console.log('🔵 LOGIN - FINAL_API_URL variable:', FINAL_API_URL);
       console.log('🔵 LOGIN - Username:', username);
       console.log('🔵 LOGIN - Payload:', { username, password: '***' });
       
       const result = await axios.post(url, { username, password }, getConfig());
       
       console.log('🟢 LOGIN - Success! Status:', result.status);
+      console.log('🟢 LOGIN - Response headers:', result.headers);
+      console.log('🟢 LOGIN - Content-Type:', result.headers['content-type']);
       console.log('🟢 LOGIN - Full response object:', result);
       console.log('🟢 LOGIN - Full response.data:', result.data);
       console.log('🟢 LOGIN - Response.data type:', typeof result.data);
-      console.log('🟢 LOGIN - Response.data keys:', result.data ? Object.keys(result.data) : 'null/undefined');
+      console.log('🟢 LOGIN - Response.data value:', JSON.stringify(result.data));
+      console.log('🟢 LOGIN - Response.data keys:', result.data && typeof result.data === 'object' ? Object.keys(result.data) : 'not an object');
       console.log('🟢 LOGIN - Has token:', !!result.data?.token);
       console.log('🟢 LOGIN - Token value:', result.data?.token);
+      
+      // אם result.data הוא string, ננסה לפרסר אותו כ-JSON
+      if (typeof result.data === 'string' && result.data.trim() !== '') {
+        try {
+          const parsed = JSON.parse(result.data);
+          console.log('🟢 LOGIN - Parsed JSON:', parsed);
+          if (parsed.token) {
+            const token = parsed.token;
+            localStorage.setItem('jwt', token);
+            console.log('🟢 LOGIN - Token saved to localStorage (from parsed JSON)');
+            return token;
+          }
+        } catch (e) {
+          console.error('🔴 LOGIN - Failed to parse JSON:', e);
+        }
+      }
       
       if (!result.data.token) {
         console.error('🔴 LOGIN - No token in response!');
@@ -116,7 +139,8 @@ export default {
   // =====================
   getTasks: async () => {
     try {
-      const url = `${FINAL_API_URL}/tasks`;
+      // CRITICAL FIX: שימוש ב-URL ישיר כדי להבטיח שהוא נטמע ב-build
+      const url = 'https://todoapis-qdh6.onrender.com/tasks';
       console.log('🔵 GET TASKS - Sending request to:', url);
       const token = localStorage.getItem('jwt');
       console.log('🔵 GET TASKS - Has token:', !!token);
@@ -152,7 +176,8 @@ export default {
   
   addTask: async (name) => {
     try {
-      const url = `${FINAL_API_URL}/tasks`;
+      // CRITICAL FIX: שימוש ב-URL ישיר כדי להבטיח שהוא נטמע ב-build
+      const url = 'https://todoapis-qdh6.onrender.com/tasks';
       console.log('🔵 ADD TASK - Sending request to:', url);
       console.log('🔵 ADD TASK - Task name:', name);
       console.log('🔵 ADD TASK - Payload:', { name, isComplete: false });
@@ -173,7 +198,8 @@ export default {
 
   setCompleted: async (id, name, isComplete) => {
     try {
-      const result = await axios.put(`${FINAL_API_URL}/tasks/${id}`, { id, name, isComplete }, getConfig());
+      // CRITICAL FIX: שימוש ב-URL ישיר כדי להבטיח שהוא נטמע ב-build
+      const result = await axios.put(`https://todoapis-qdh6.onrender.com/tasks/${id}`, { id, name, isComplete }, getConfig());
       return result.data;
     } catch (error) {
       handleError(error);
@@ -182,7 +208,8 @@ export default {
 
   deleteTask: async (id) => {
     try {
-      await axios.delete(`${FINAL_API_URL}/tasks/${id}`, getConfig());
+      // CRITICAL FIX: שימוש ב-URL ישיר כדי להבטיח שהוא נטמע ב-build
+      await axios.delete(`https://todoapis-qdh6.onrender.com/tasks/${id}`, getConfig());
     } catch (error) {
       handleError(error);
     }
