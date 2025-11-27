@@ -3,22 +3,15 @@ import axios from 'axios';
 // URL של ה-API - משתמש במשתנה סביבה לפי המטלה
 // ב-create-react-app משתני סביבה חייבים להתחיל ב-REACT_APP_
 // IMPORTANT: ב-Render, משתני סביבה נטמעים רק בזמן ה-build
-// FIX: משתמשים ב-URL ישיר כדי להבטיח שהוא תמיד נטמע ב-build
-// אם המשתנה לא מוגדר, נשתמש ב-URL ישיר
-const API_URL_DEFAULT = 'https://todoapis-qdh6.onrender.com';
-
-// בדיקה אם המשתנה קיים ולא ריק
 // CRITICAL FIX: משתמשים ב-URL ישיר כדי להבטיח שהוא תמיד נטמע ב-build
-// ב-Render, אם המשתנה לא מוגדר בזמן ה-build, הוא לא נטמע
-// לכן, נשתמש ב-URL ישיר בקוד
-const FINAL_API_URL = 'https://todoapis-qdh6.onrender.com';
+// שימוש ב-URL ישיר ללא משתנה כדי להבטיח שהוא נטמע ב-build
+const API_BASE_URL = 'https://todoapis-qdh6.onrender.com';
 
 // Debug - הדפסת ה-API URL
 console.log('🌐 API CONFIG - REACT_APP_API_URL from env:', process.env.REACT_APP_API_URL);
-console.log('🌐 API CONFIG - FINAL_API_URL (will be used):', FINAL_API_URL);
-console.log('🌐 API CONFIG - API_URL_DEFAULT:', API_URL_DEFAULT);
-console.log('🌐 API CONFIG - FINAL_API_URL type:', typeof FINAL_API_URL);
-console.log('🌐 API CONFIG - FINAL_API_URL length:', FINAL_API_URL ? FINAL_API_URL.length : 0);
+console.log('🌐 API CONFIG - API_BASE_URL (hardcoded):', API_BASE_URL);
+console.log('🌐 API CONFIG - API_BASE_URL type:', typeof API_BASE_URL);
+console.log('🌐 API CONFIG - API_BASE_URL length:', API_BASE_URL ? API_BASE_URL.length : 0);
 
 // פונקציה עזר ליצירת config עם JWT
 const getConfig = () => {
@@ -54,9 +47,9 @@ export default {
   register: async (username, password) => {
     try {
       // CRITICAL FIX: שימוש ב-URL ישיר כדי להבטיח שהוא נטמע ב-build
-      const url = 'https://todoapis-qdh6.onrender.com/register';
+      const url = API_BASE_URL + '/register';
       console.log('🔵 REGISTER - Sending request to:', url);
-      console.log('🔵 REGISTER - FINAL_API_URL variable:', FINAL_API_URL);
+      console.log('🔵 REGISTER - API_BASE_URL:', API_BASE_URL);
       console.log('🔵 REGISTER - Username:', username);
       console.log('🔵 REGISTER - Payload:', { username, passwordHash: password });
       
@@ -77,13 +70,22 @@ export default {
   login: async (username, password) => {
     try {
       // CRITICAL FIX: שימוש ב-URL ישיר כדי להבטיח שהוא נטמע ב-build
-      const url = 'https://todoapis-qdh6.onrender.com/login';
-      console.log('🔵 LOGIN - Sending request to:', url);
-      console.log('🔵 LOGIN - FINAL_API_URL variable:', FINAL_API_URL);
+      // שימוש ב-URL ישיר ללא משתנה כדי להבטיח שהוא נטמע ב-build
+      const apiBaseUrl = 'https://todoapis-qdh6.onrender.com';
+      const loginEndpoint = '/login';
+      const fullUrl = apiBaseUrl + loginEndpoint;
+      
+      console.log('🔵 LOGIN - apiBaseUrl:', apiBaseUrl);
+      console.log('🔵 LOGIN - loginEndpoint:', loginEndpoint);
+      console.log('🔵 LOGIN - fullUrl:', fullUrl);
+      console.log('🔵 LOGIN - fullUrl type:', typeof fullUrl);
+      console.log('🔵 LOGIN - fullUrl length:', fullUrl.length);
+      console.log('🔵 LOGIN - Sending request to:', fullUrl);
+      console.log('🔵 LOGIN - API_BASE_URL:', apiBaseUrl);
       console.log('🔵 LOGIN - Username:', username);
       console.log('🔵 LOGIN - Payload:', { username, password: '***' });
       
-      const result = await axios.post(url, { username, password }, getConfig());
+      const result = await axios.post(fullUrl, { username, password }, getConfig());
       
       console.log('🟢 LOGIN - Success! Status:', result.status);
       console.log('🟢 LOGIN - Response headers:', result.headers);
@@ -140,7 +142,7 @@ export default {
   getTasks: async () => {
     try {
       // CRITICAL FIX: שימוש ב-URL ישיר כדי להבטיח שהוא נטמע ב-build
-      const url = 'https://todoapis-qdh6.onrender.com/tasks';
+      const url = API_BASE_URL + '/tasks';
       console.log('🔵 GET TASKS - Sending request to:', url);
       const token = localStorage.getItem('jwt');
       console.log('🔵 GET TASKS - Has token:', !!token);
@@ -177,7 +179,7 @@ export default {
   addTask: async (name) => {
     try {
       // CRITICAL FIX: שימוש ב-URL ישיר כדי להבטיח שהוא נטמע ב-build
-      const url = 'https://todoapis-qdh6.onrender.com/tasks';
+      const url = API_BASE_URL + '/tasks';
       console.log('🔵 ADD TASK - Sending request to:', url);
       console.log('🔵 ADD TASK - Task name:', name);
       console.log('🔵 ADD TASK - Payload:', { name, isComplete: false });
@@ -199,7 +201,7 @@ export default {
   setCompleted: async (id, name, isComplete) => {
     try {
       // CRITICAL FIX: שימוש ב-URL ישיר כדי להבטיח שהוא נטמע ב-build
-      const result = await axios.put(`https://todoapis-qdh6.onrender.com/tasks/${id}`, { id, name, isComplete }, getConfig());
+      const result = await axios.put(`${API_BASE_URL}/tasks/${id}`, { id, name, isComplete }, getConfig());
       return result.data;
     } catch (error) {
       handleError(error);
@@ -209,7 +211,7 @@ export default {
   deleteTask: async (id) => {
     try {
       // CRITICAL FIX: שימוש ב-URL ישיר כדי להבטיח שהוא נטמע ב-build
-      await axios.delete(`https://todoapis-qdh6.onrender.com/tasks/${id}`, getConfig());
+      await axios.delete(`${API_BASE_URL}/tasks/${id}`, getConfig());
     } catch (error) {
       handleError(error);
     }
