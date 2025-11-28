@@ -1,27 +1,27 @@
 import axios from 'axios';
 
-// CRITICAL FIX: יצירת axios instance עם baseURL ישיר
+// CRITICAL FIX: שימוש ב-URL מלא ישירות בכל קריאה
 // זה מבטיח שה-URL תמיד נטמע ב-build
-const apiClient = axios.create({
-  baseURL: 'https://todoapis-qdh6.onrender.com',
-  headers: {
-    'Content-Type': 'application/json'
-  }
-});
+const API_BASE = 'https://todoapis-qdh6.onrender.com';
 
 // Debug - הדפסת ה-API URL
-console.log('🌐 API CONFIG - baseURL:', apiClient.defaults.baseURL);
-console.log('🌐 API CONFIG - baseURL type:', typeof apiClient.defaults.baseURL);
-console.log('🌐 API CONFIG - baseURL length:', apiClient.defaults.baseURL ? apiClient.defaults.baseURL.length : 0);
+console.log('🌐 API CONFIG - API_BASE:', API_BASE);
+console.log('🌐 API CONFIG - API_BASE type:', typeof API_BASE);
+console.log('🌐 API CONFIG - API_BASE length:', API_BASE ? API_BASE.length : 0);
 
-// Interceptor להוספת JWT לכל בקשה
-apiClient.interceptors.request.use((config) => {
+// פונקציה עזר ליצירת config עם JWT
+const getConfig = () => {
   const token = localStorage.getItem('jwt');
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
-});
+};
 
 // פונקציה עזר לטיפול בשגיאות
 const handleError = (error) => {
@@ -42,12 +42,13 @@ export default {
   // =====================
   register: async (username, password) => {
     try {
-      console.log('🔵 REGISTER - baseURL:', apiClient.defaults.baseURL);
-      console.log('🔵 REGISTER - Full URL will be:', apiClient.defaults.baseURL + '/register');
+      const fullUrl = API_BASE + '/register';
+      console.log('🔵 REGISTER - API_BASE:', API_BASE);
+      console.log('🔵 REGISTER - Full URL:', fullUrl);
       console.log('🔵 REGISTER - Username:', username);
       console.log('🔵 REGISTER - Payload:', { username, passwordHash: password });
       
-      const result = await apiClient.post('/register', { username, passwordHash: password });
+      const result = await axios.post(fullUrl, { username, passwordHash: password }, getConfig());
       
       console.log('🟢 REGISTER - Success! Response:', result.data);
       console.log('🟢 REGISTER - Status:', result.status);
@@ -63,12 +64,13 @@ export default {
 
   login: async (username, password) => {
     try {
-      console.log('🔵 LOGIN - baseURL:', apiClient.defaults.baseURL);
-      console.log('🔵 LOGIN - Full URL will be:', apiClient.defaults.baseURL + '/login');
+      const fullUrl = API_BASE + '/login';
+      console.log('🔵 LOGIN - API_BASE:', API_BASE);
+      console.log('🔵 LOGIN - Full URL:', fullUrl);
       console.log('🔵 LOGIN - Username:', username);
       console.log('🔵 LOGIN - Payload:', { username, password: '***' });
       
-      const result = await apiClient.post('/login', { username, password });
+      const result = await axios.post(fullUrl, { username, password }, getConfig());
       
       console.log('🟢 LOGIN - Success! Status:', result.status);
       console.log('🟢 LOGIN - Response headers:', result.headers);
@@ -124,12 +126,13 @@ export default {
   // =====================
   getTasks: async () => {
     try {
-      console.log('🔵 GET TASKS - baseURL:', apiClient.defaults.baseURL);
-      console.log('🔵 GET TASKS - Full URL will be:', apiClient.defaults.baseURL + '/tasks');
+      const fullUrl = API_BASE + '/tasks';
+      console.log('🔵 GET TASKS - API_BASE:', API_BASE);
+      console.log('🔵 GET TASKS - Full URL:', fullUrl);
       const token = localStorage.getItem('jwt');
       console.log('🔵 GET TASKS - Has token:', !!token);
       
-      const result = await apiClient.get('/tasks');
+      const result = await axios.get(fullUrl, getConfig());
       
       console.log('🟢 GET TASKS - Success! Status:', result.status);
       console.log('🟢 GET TASKS - Data type:', Array.isArray(result.data) ? 'Array' : typeof result.data);
@@ -160,12 +163,13 @@ export default {
   
   addTask: async (name) => {
     try {
-      console.log('🔵 ADD TASK - baseURL:', apiClient.defaults.baseURL);
-      console.log('🔵 ADD TASK - Full URL will be:', apiClient.defaults.baseURL + '/tasks');
+      const fullUrl = API_BASE + '/tasks';
+      console.log('🔵 ADD TASK - API_BASE:', API_BASE);
+      console.log('🔵 ADD TASK - Full URL:', fullUrl);
       console.log('🔵 ADD TASK - Task name:', name);
       console.log('🔵 ADD TASK - Payload:', { name, isComplete: false });
       
-      const result = await apiClient.post('/tasks', { name, isComplete: false });
+      const result = await axios.post(fullUrl, { name, isComplete: false }, getConfig());
       
       console.log('🟢 ADD TASK - Success! Status:', result.status);
       console.log('🟢 ADD TASK - Created task:', result.data);
@@ -181,7 +185,7 @@ export default {
 
   setCompleted: async (id, name, isComplete) => {
     try {
-      const result = await apiClient.put(`/tasks/${id}`, { id, name, isComplete });
+      const result = await axios.put(`${API_BASE}/tasks/${id}`, { id, name, isComplete }, getConfig());
       return result.data;
     } catch (error) {
       handleError(error);
@@ -190,7 +194,7 @@ export default {
 
   deleteTask: async (id) => {
     try {
-      await apiClient.delete(`/tasks/${id}`);
+      await axios.delete(`${API_BASE}/tasks/${id}`, getConfig());
     } catch (error) {
       handleError(error);
     }
