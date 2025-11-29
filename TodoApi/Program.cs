@@ -45,7 +45,7 @@ builder.Services.AddCors(p => p.AddPolicy("AllowAll", b => b
     .AllowAnyOrigin()
     .AllowAnyHeader()
     .AllowAnyMethod()
-    .WithExposedHeaders("Content-Type", "Authorization")));
+    .WithExposedHeaders("*")));
 builder.Services.AddDbContext<ToDoDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("ToDoDB"), new MySqlServerVersion(new Version(8, 0, 44))));
 

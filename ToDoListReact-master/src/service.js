@@ -62,8 +62,15 @@ export default {
       const result = await axios.post('https://todoapis-qdh6.onrender.com/login', { username, password }, getConfig());
       
       console.log('🟢 LOGIN - Success!');
+      console.log('🟢 LOGIN - Status:', result.status);
+      console.log('🟢 LOGIN - Status text:', result.statusText);
+      console.log('🟢 LOGIN - Headers:', result.headers);
+      console.log('🟢 LOGIN - Content-Type:', result.headers['content-type'] || result.headers['Content-Type']);
       console.log('🟢 LOGIN - Response data:', result.data);
+      console.log('🟢 LOGIN - Response data type:', typeof result.data);
+      console.log('🟢 LOGIN - Response data stringified:', JSON.stringify(result.data));
       console.log('🟢 LOGIN - Has token:', !!result.data?.token);
+      console.log('🟢 LOGIN - Full response object:', result);
       
       // אם result.data הוא string, ננסה לפרסר אותו כ-JSON
       if (typeof result.data === 'string' && result.data.trim() !== '') {
