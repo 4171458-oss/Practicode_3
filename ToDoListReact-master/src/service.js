@@ -2,13 +2,13 @@ import axios from 'axios';
 
 // CRITICAL FIX: שימוש ב-URL מלא ישירות בכל קריאה
 // ב-Render, baseURL לא נטמע ב-build, אז נשתמש ב-URL מלא ישירות
-// שימוש ב-template literal כדי להבטיח שהוא נטמע
-const API_URL = `https://todoapis-qdh6.onrender.com`;
+// כל הקריאות משתמשות ב-URL ישיר (hardcoded) כדי להבטיח שהוא נטמע ב-build
+const API_BASE = 'https://todoapis-qdh6.onrender.com';
 
 // Debug - וידוא שה-URL נטמע
-console.log('🔧 SERVICE INIT - API_URL:', API_URL);
-console.log('🔧 SERVICE INIT - API_URL type:', typeof API_URL);
-console.log('🔧 SERVICE INIT - API_URL length:', API_URL.length);
+console.log('🔧 SERVICE INIT - API_BASE:', API_BASE);
+console.log('🔧 SERVICE INIT - API_BASE type:', typeof API_BASE);
+console.log('🔧 SERVICE INIT - API_BASE length:', API_BASE.length);
 
 // פונקציה עזר ליצירת config עם JWT
 const getConfig = () => {
@@ -68,7 +68,6 @@ export default {
       // CRITICAL: שימוש ב-URL ישיר ללא משתנה
       const fullUrl = 'https://todoapis-qdh6.onrender.com/login';
       console.log('🔵 LOGIN - Full URL (hardcoded):', fullUrl);
-      console.log('🔵 LOGIN - API_URL variable:', API_URL);
       console.log('🔵 LOGIN - Username:', username);
       console.log('🔵 LOGIN - Payload:', { username, password: '***' });
       
