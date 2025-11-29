@@ -1,9 +1,24 @@
 import axios from 'axios';
 
-// CRITICAL FIX: שימוש ב-URL מלא ישירות בכל קריאה
-// ב-Render, משתנים לא נטמעים ב-build, אז נשתמש ב-URL ישיר בכל מקום
-// כל הקריאות משתמשות ב-URL ישיר (hardcoded) כדי להבטיח שהוא נטמע ב-build
-console.log('🔧 Using direct URLs to: https://todoapis-qdh6.onrender.com');
+// CRITICAL FIX: קריאת ה-API URL מקובץ config ב-public
+// קבצים ב-public לא עוברים minification, אז ה-URL יישמר
+let API_BASE_URL = 'https://todoapis-qdh6.onrender.com';
+
+// קריאת ה-config בזמן ריצה (לא בזמן build)
+(async () => {
+  try {
+    const response = await fetch('/config.json');
+    const config = await response.json();
+    if (config.API_URL) {
+      API_BASE_URL = config.API_URL;
+      console.log('🔧 Loaded API URL from config.json:', API_BASE_URL);
+    }
+  } catch (error) {
+    console.warn('⚠️ Could not load config.json, using default URL:', API_BASE_URL);
+  }
+})();
+
+console.log('🔧 Using API URL:', API_BASE_URL);
 
 // פונקציה עזר ליצירת config עם JWT
 const getConfig = () => {
@@ -38,10 +53,15 @@ export default {
   // =====================
   register: async (username, password) => {
     try {
-      // CRITICAL: שימוש ב-URL ישיר ללא משתנה
-      console.log('🔵 REGISTER - Username:', username);
+      // קריאת ה-API URL מה-config
+      const configResponse = await fetch('/config.json');
+      const config = await configResponse.json();
+      const apiUrl = config.API_URL || 'https://todoapis-qdh6.onrender.com';
       
-      const result = await axios.post('https://todoapis-qdh6.onrender.com/register', { username, passwordHash: password }, getConfig());
+      console.log('🔵 REGISTER - Username:', username);
+      console.log('🔵 REGISTER - API URL:', apiUrl);
+      
+      const result = await axios.post(`${apiUrl}/register`, { username, passwordHash: password }, getConfig());
       
       console.log('🟢 REGISTER - Success!', result.data);
       
@@ -56,11 +76,15 @@ export default {
 
   login: async (username, password) => {
     try {
-      // CRITICAL: שימוש ב-URL ישיר ללא משתנה
-      const loginUrl = 'https://todoapis-qdh6.onrender.com/login';
+      // קריאת ה-API URL מה-config
+      const configResponse = await fetch('/config.json');
+      const config = await configResponse.json();
+      const apiUrl = config.API_URL || 'https://todoapis-qdh6.onrender.com';
+      const loginUrl = `${apiUrl}/login`;
+      
       console.log('🔵 LOGIN - Username:', username);
+      console.log('🔵 LOGIN - API URL:', apiUrl);
       console.log('🔵 LOGIN - Full URL:', loginUrl);
-      console.log('🔵 LOGIN - Request config:', getConfig());
       
       const result = await axios.post(loginUrl, { username, password }, getConfig());
       
@@ -123,8 +147,12 @@ export default {
   // =====================
   getTasks: async () => {
     try {
-      // CRITICAL: שימוש ב-URL ישיר ללא משתנה
-      const result = await axios.get('https://todoapis-qdh6.onrender.com/tasks', getConfig());
+      // קריאת ה-API URL מה-config
+      const configResponse = await fetch('/config.json');
+      const config = await configResponse.json();
+      const apiUrl = config.API_URL || 'https://todoapis-qdh6.onrender.com';
+      
+      const result = await axios.get(`${apiUrl}/tasks`, getConfig());
       
       console.log('🟢 GET TASKS - Success!', result.data);
       
@@ -152,10 +180,14 @@ export default {
   
   addTask: async (name) => {
     try {
-      // CRITICAL: שימוש ב-URL ישיר ללא משתנה
+      // קריאת ה-API URL מה-config
+      const configResponse = await fetch('/config.json');
+      const config = await configResponse.json();
+      const apiUrl = config.API_URL || 'https://todoapis-qdh6.onrender.com';
+      
       console.log('🔵 ADD TASK - Task name:', name);
       
-      const result = await axios.post('https://todoapis-qdh6.onrender.com/tasks', { name, isComplete: false }, getConfig());
+      const result = await axios.post(`${apiUrl}/tasks`, { name, isComplete: false }, getConfig());
       
       console.log('🟢 ADD TASK - Success!', result.data);
       
@@ -169,8 +201,12 @@ export default {
 
   setCompleted: async (id, name, isComplete) => {
     try {
-      // CRITICAL: שימוש ב-URL ישיר ללא משתנה
-      const result = await axios.put(`https://todoapis-qdh6.onrender.com/tasks/${id}`, { id, name, isComplete }, getConfig());
+      // קריאת ה-API URL מה-config
+      const configResponse = await fetch('/config.json');
+      const config = await configResponse.json();
+      const apiUrl = config.API_URL || 'https://todoapis-qdh6.onrender.com';
+      
+      const result = await axios.put(`${apiUrl}/tasks/${id}`, { id, name, isComplete }, getConfig());
       return result.data;
     } catch (error) {
       handleError(error);
@@ -179,8 +215,12 @@ export default {
 
   deleteTask: async (id) => {
     try {
-      // CRITICAL: שימוש ב-URL ישיר ללא משתנה
-      await axios.delete(`https://todoapis-qdh6.onrender.com/tasks/${id}`, getConfig());
+      // קריאת ה-API URL מה-config
+      const configResponse = await fetch('/config.json');
+      const config = await configResponse.json();
+      const apiUrl = config.API_URL || 'https://todoapis-qdh6.onrender.com';
+      
+      await axios.delete(`${apiUrl}/tasks/${id}`, getConfig());
     } catch (error) {
       handleError(error);
     }
