@@ -57,9 +57,16 @@ export default {
   login: async (username, password) => {
     try {
       // CRITICAL: שימוש ב-URL ישיר ללא משתנה
+      const loginUrl = 'https://todoapis-qdh6.onrender.com/login';
       console.log('🔵 LOGIN - Username:', username);
+      console.log('🔵 LOGIN - Full URL:', loginUrl);
+      console.log('🔵 LOGIN - Request config:', getConfig());
       
-      const result = await axios.post('https://todoapis-qdh6.onrender.com/login', { username, password }, getConfig());
+      const result = await axios.post(loginUrl, { username, password }, getConfig());
+      
+      console.log('🔵 LOGIN - Request URL (after):', result.config?.url);
+      console.log('🔵 LOGIN - Request baseURL:', result.config?.baseURL);
+      console.log('🔵 LOGIN - Request full URL:', result.config?.baseURL ? result.config.baseURL + result.config.url : result.config?.url);
       
       console.log('🟢 LOGIN - Success!');
       console.log('🟢 LOGIN - Status:', result.status);
