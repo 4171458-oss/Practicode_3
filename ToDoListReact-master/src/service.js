@@ -1,13 +1,7 @@
 import axios from 'axios';
 
-// CRITICAL FIX: שימוש ב-URL מלא ישירות בכל קריאה
+// CRITICAL FIX: שימוש ב-URL ישיר בכל מקום - בלי משתנה כלל
 // זה מבטיח שה-URL תמיד נטמע ב-build
-const API_BASE = 'https://todoapis-qdh6.onrender.com';
-
-// Debug - הדפסת ה-API URL
-console.log('🌐 API CONFIG - API_BASE:', API_BASE);
-console.log('🌐 API CONFIG - API_BASE type:', typeof API_BASE);
-console.log('🌐 API CONFIG - API_BASE length:', API_BASE ? API_BASE.length : 0);
 
 // פונקציה עזר ליצירת config עם JWT
 const getConfig = () => {
@@ -42,8 +36,7 @@ export default {
   // =====================
   register: async (username, password) => {
     try {
-      const fullUrl = API_BASE + '/register';
-      console.log('🔵 REGISTER - API_BASE:', API_BASE);
+      const fullUrl = 'https://todoapis-qdh6.onrender.com/register';
       console.log('🔵 REGISTER - Full URL:', fullUrl);
       console.log('🔵 REGISTER - Username:', username);
       console.log('🔵 REGISTER - Payload:', { username, passwordHash: password });
@@ -64,8 +57,7 @@ export default {
 
   login: async (username, password) => {
     try {
-      const fullUrl = API_BASE + '/login';
-      console.log('🔵 LOGIN - API_BASE:', API_BASE);
+      const fullUrl = 'https://todoapis-qdh6.onrender.com/login';
       console.log('🔵 LOGIN - Full URL:', fullUrl);
       console.log('🔵 LOGIN - Username:', username);
       console.log('🔵 LOGIN - Payload:', { username, password: '***' });
@@ -126,8 +118,7 @@ export default {
   // =====================
   getTasks: async () => {
     try {
-      const fullUrl = API_BASE + '/tasks';
-      console.log('🔵 GET TASKS - API_BASE:', API_BASE);
+      const fullUrl = 'https://todoapis-qdh6.onrender.com/tasks';
       console.log('🔵 GET TASKS - Full URL:', fullUrl);
       const token = localStorage.getItem('jwt');
       console.log('🔵 GET TASKS - Has token:', !!token);
@@ -163,8 +154,7 @@ export default {
   
   addTask: async (name) => {
     try {
-      const fullUrl = API_BASE + '/tasks';
-      console.log('🔵 ADD TASK - API_BASE:', API_BASE);
+      const fullUrl = 'https://todoapis-qdh6.onrender.com/tasks';
       console.log('🔵 ADD TASK - Full URL:', fullUrl);
       console.log('🔵 ADD TASK - Task name:', name);
       console.log('🔵 ADD TASK - Payload:', { name, isComplete: false });
@@ -185,7 +175,7 @@ export default {
 
   setCompleted: async (id, name, isComplete) => {
     try {
-      const result = await axios.put(`${API_BASE}/tasks/${id}`, { id, name, isComplete }, getConfig());
+      const result = await axios.put(`https://todoapis-qdh6.onrender.com/tasks/${id}`, { id, name, isComplete }, getConfig());
       return result.data;
     } catch (error) {
       handleError(error);
@@ -194,7 +184,7 @@ export default {
 
   deleteTask: async (id) => {
     try {
-      await axios.delete(`${API_BASE}/tasks/${id}`, getConfig());
+      await axios.delete(`https://todoapis-qdh6.onrender.com/tasks/${id}`, getConfig());
     } catch (error) {
       handleError(error);
     }
