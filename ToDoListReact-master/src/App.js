@@ -16,68 +16,57 @@ function App() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMessage("");
-    console.log('🔐 HANDLE LOGIN - Starting login for:', username);
     try {
-      const token = await service.login(username, password);
-      console.log('✅ HANDLE LOGIN - Login successful! Token received:', !!token);
+      await service.login(username, password);
       setUserLoggedIn(true);
       setCurrentScreen("todos");
     } catch (error) {
-      console.error("❌ HANDLE LOGIN - Login failed:", error);
-      console.error("❌ HANDLE LOGIN - Error details:", error.response?.data);
-      setErrorMessage("שם משתמש או סיסמה שגויים: " + (error.response?.data?.message || error.response?.data || error.message));
+      setErrorMessage("שם משתמש או סיסמה שגויים");
     }
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setErrorMessage("");
-    console.log('📝 HANDLE REGISTER - Starting registration for:', username);
     try {
-      const result = await service.register(username, password);
-      console.log('✅ HANDLE REGISTER - Registration successful! Result:', result);
+      await service.register(username, password);
       setErrorMessage("הרשמה הצליחה! התחברי עכשיו");
       setCurrentScreen("login");
       setUsername("");
       setPassword("");
     } catch (error) {
-      console.error("❌ HANDLE REGISTER - Registration failed:", error);
-      console.error("❌ HANDLE REGISTER - Error details:", error.response?.data);
       setErrorMessage("הרשמה נכשלה: " + (error.response?.data?.message || error.response?.data || error.message));
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = (e) => {
+    e?.preventDefault();
     service.logout();
     setUserLoggedIn(false);
     setCurrentScreen("login");
     setUsername("");
     setPassword("");
     setTodos([]);
-    setErrorMessage(""); // מנקים הודעות שגיאה
+    setErrorMessage("");
   };
 
   // ===================== TODOS =====================
   const getTodos = async () => {
     try {
       const data = await service.getTasks();
-      // וודא שזה תמיד מערך
       if (Array.isArray(data)) {
         setTodos(data);
       } else {
-        console.warn("getTasks returned non-array:", data);
         setTodos([]);
       }
     } catch (err) {
-      console.error("Get todos error:", err);
-      // אם זו שגיאת 401, מעבירים לדף התחברות
       if (err.response && err.response.status === 401) {
         setCurrentScreen("login");
         setErrorMessage("ההתחברות פגה. נא להתחבר מחדש");
         setTodos([]);
       } else {
         setTodos([]);
-        setErrorMessage("שגיאה בטעינת המשימות: " + (err.response?.data?.message || err.message));
+        setErrorMessage("שגיאה בטעינת המשימות");
       }
     }
   };
@@ -85,17 +74,15 @@ function App() {
   
   const addTodo = async (e) => {
     e.preventDefault();
-    if (!newTodo.trim()) return; // בדיקה שהשדה לא ריק
-    const todoToAdd = newTodo.trim(); // שמירה של הערך לפני הניקוי
-    setNewTodo(""); // מנקים את השדה מיד (UX טוב יותר)
+    if (!newTodo.trim()) return;
+    const todoToAdd = newTodo.trim();
+    setNewTodo("");
     try {
       await service.addTask(todoToAdd);
-      await getTodos(); // מחכים שהמשימה תתווסף לפני רענון
+      await getTodos();
     } catch (error) {
-      console.error("Add todo error:", error);
-      setNewTodo(todoToAdd); // מחזירים את הערך לשדה אם יש שגיאה
-      setErrorMessage("שגיאה בהוספת משימה: " + (error.response?.data?.message || error.response?.data || error.message));
-      // אם זו שגיאת 401, מעבירים לדף התחברות
+      setNewTodo(todoToAdd);
+      setErrorMessage("שגיאה בהוספת משימה");
       if (error.response && error.response.status === 401) {
         setCurrentScreen("login");
       }
@@ -107,8 +94,7 @@ function App() {
       await service.setCompleted(todo.id, todo.name, !todo.isComplete);
       getTodos();
     } catch (error) {
-      console.error("Toggle complete error:", error);
-      setErrorMessage("שגיאה בעדכון משימה: " + (error.response?.data || error.message));
+      setErrorMessage("שגיאה בעדכון משימה");
     }
   };
 
@@ -117,8 +103,7 @@ function App() {
       await service.deleteTask(id);
       getTodos();
     } catch (error) {
-      console.error("Delete todo error:", error);
-      setErrorMessage("שגיאה במחיקת משימה: " + (error.response?.data || error.message));
+      setErrorMessage("שגיאה במחיקת משימה");
     }
   };
 
