@@ -1,13 +1,9 @@
 import axios from 'axios';
 
 // CRITICAL FIX: שימוש ב-URL מלא ישירות בכל קריאה
-// ב-Render, baseURL לא נטמע ב-build, אז נשתמש ב-URL מלא ישירות
+// ב-Render, משתנים לא נטמעים ב-build, אז נשתמש ב-URL ישיר בכל מקום
 // כל הקריאות משתמשות ב-URL ישיר (hardcoded) כדי להבטיח שהוא נטמע ב-build
-const API_BASE = 'https://todoapis-qdh6.onrender.com';
-
-// Debug - וידוא שה-URL נטמע
-console.log('🔧 SERVICE INIT - API_BASE:', API_BASE);
-console.log('🔧 SERVICE INIT - API_BASE length:', API_BASE.length);
+console.log('🔧 Using direct URLs to: https://todoapis-qdh6.onrender.com');
 
 // פונקציה עזר ליצירת config עם JWT
 const getConfig = () => {
@@ -43,14 +39,11 @@ export default {
   register: async (username, password) => {
     try {
       // CRITICAL: שימוש ב-URL ישיר ללא משתנה
-      const fullUrl = `${API_BASE}/register`;
-      console.log('🔵 REGISTER - Full URL:', fullUrl);
       console.log('🔵 REGISTER - Username:', username);
       
-      const result = await axios.post(fullUrl, { username, passwordHash: password }, getConfig());
+      const result = await axios.post('https://todoapis-qdh6.onrender.com/register', { username, passwordHash: password }, getConfig());
       
-      console.log('🟢 REGISTER - Success! Response:', result.data);
-      console.log('🟢 REGISTER - Status:', result.status);
+      console.log('🟢 REGISTER - Success!', result.data);
       
       return result.data;
     } catch (error) {
@@ -64,13 +57,11 @@ export default {
   login: async (username, password) => {
     try {
       // CRITICAL: שימוש ב-URL ישיר ללא משתנה
-      const fullUrl = `${API_BASE}/login`;
-      console.log('🔵 LOGIN - Full URL:', fullUrl);
       console.log('🔵 LOGIN - Username:', username);
       
-      const result = await axios.post(fullUrl, { username, password }, getConfig());
+      const result = await axios.post('https://todoapis-qdh6.onrender.com/login', { username, password }, getConfig());
       
-      console.log('🟢 LOGIN - Success! Status:', result.status);
+      console.log('🟢 LOGIN - Success!');
       console.log('🟢 LOGIN - Response data:', result.data);
       console.log('🟢 LOGIN - Has token:', !!result.data?.token);
       
@@ -91,14 +82,14 @@ export default {
       }
       
       if (!result.data || !result.data.token) {
-        console.error('🔴 LOGIN - No token in response!');
+        console.error('🔴 LOGIN - No token!');
         console.error('🔴 LOGIN - Response data:', result.data);
         throw new Error('No token received from server');
       }
       
       const token = result.data.token;
       localStorage.setItem('jwt', token);
-      console.log('🟢 LOGIN - Token saved to localStorage');
+      console.log('🟢 LOGIN - Token saved!');
       
       return token;
     } catch (error) {
@@ -119,15 +110,9 @@ export default {
   getTasks: async () => {
     try {
       // CRITICAL: שימוש ב-URL ישיר ללא משתנה
-      const fullUrl = `${API_BASE}/tasks`;
-      console.log('🔵 GET TASKS - Full URL:', fullUrl);
-      const token = localStorage.getItem('jwt');
-      console.log('🔵 GET TASKS - Has token:', !!token);
+      const result = await axios.get('https://todoapis-qdh6.onrender.com/tasks', getConfig());
       
-      const result = await axios.get(fullUrl, getConfig());
-      
-      console.log('🟢 GET TASKS - Success! Status:', result.status);
-      console.log('🟢 GET TASKS - Data:', result.data);
+      console.log('🟢 GET TASKS - Success!', result.data);
       
       // וודא שהתוצאה היא מערך
       if (Array.isArray(result.data)) {
@@ -154,13 +139,11 @@ export default {
   addTask: async (name) => {
     try {
       // CRITICAL: שימוש ב-URL ישיר ללא משתנה
-      const fullUrl = `${API_BASE}/tasks`;
-      console.log('🔵 ADD TASK - Full URL:', fullUrl);
       console.log('🔵 ADD TASK - Task name:', name);
       
-      const result = await axios.post(fullUrl, { name, isComplete: false }, getConfig());
+      const result = await axios.post('https://todoapis-qdh6.onrender.com/tasks', { name, isComplete: false }, getConfig());
       
-      console.log('🟢 ADD TASK - Success! Created task:', result.data);
+      console.log('🟢 ADD TASK - Success!', result.data);
       
       return result.data;
     } catch (error) {
@@ -173,8 +156,7 @@ export default {
   setCompleted: async (id, name, isComplete) => {
     try {
       // CRITICAL: שימוש ב-URL ישיר ללא משתנה
-      const fullUrl = `${API_BASE}/tasks/${id}`;
-      const result = await axios.put(fullUrl, { id, name, isComplete }, getConfig());
+      const result = await axios.put(`https://todoapis-qdh6.onrender.com/tasks/${id}`, { id, name, isComplete }, getConfig());
       return result.data;
     } catch (error) {
       handleError(error);
@@ -184,8 +166,7 @@ export default {
   deleteTask: async (id) => {
     try {
       // CRITICAL: שימוש ב-URL ישיר ללא משתנה
-      const fullUrl = `${API_BASE}/tasks/${id}`;
-      await axios.delete(fullUrl, getConfig());
+      await axios.delete(`https://todoapis-qdh6.onrender.com/tasks/${id}`, getConfig());
     } catch (error) {
       handleError(error);
     }
