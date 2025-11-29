@@ -148,9 +148,14 @@ app.MapPost("/login", async (ToDoDbContext db, LoginRequest login) =>
 {
     try
     {
+        Console.WriteLine($"🔍 Login attempt for user: {login.Username}");
+        
         var user = await db.Users.FirstOrDefaultAsync(u => u.Username == login.Username);
         if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.PasswordHash))
+        {
+            Console.WriteLine("❌ Login failed: Invalid credentials");
             return Results.Unauthorized();
+        }
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var tokenKey = Encoding.ASCII.GetBytes(jwtKey);
@@ -170,12 +175,16 @@ app.MapPost("/login", async (ToDoDbContext db, LoginRequest login) =>
         var token = tokenHandler.CreateToken(tokenDescriptor);
         var jwt = tokenHandler.WriteToken(token);
 
-        return Results.Ok(new { token = jwt });
+        Console.WriteLine($"✅ Login successful for user: {login.Username}, Token generated: {!string.IsNullOrEmpty(jwt)}");
+        
+        var response = new { token = jwt };
+        Console.WriteLine($"📤 Sending response: {System.Text.Json.JsonSerializer.Serialize(response)}");
+        
+        return Results.Ok(response);
     }
     catch (Exception ex)
     {
-        // להדפיס את השגיאה בקונסול
-        Console.WriteLine(ex);
+        Console.WriteLine($"❌ Login error: {ex}");
         return Results.Problem("Internal Server Error: " + ex.Message);
     }
 });
