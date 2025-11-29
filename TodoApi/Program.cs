@@ -41,7 +41,11 @@ builder.Services.AddAuthentication(options =>
 // Services
 // =====================
 builder.Services.AddControllers();
-builder.Services.AddCors(p => p.AddPolicy("AllowAll", b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+builder.Services.AddCors(p => p.AddPolicy("AllowAll", b => b
+    .AllowAnyOrigin()
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .WithExposedHeaders("Content-Type", "Authorization")));
 builder.Services.AddDbContext<ToDoDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("ToDoDB"), new MySqlServerVersion(new Version(8, 0, 44))));
 
@@ -54,6 +58,24 @@ var app = builder.Build();
 // Middleware
 // =====================
 app.UseCors("AllowAll");
+
+// Debug middleware - לוג כל בקשה
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"📨 {context.Request.Method} {context.Request.Path}");
+    if (context.Request.ContentLength > 0)
+    {
+        context.Request.EnableBuffering();
+        var body = await new System.IO.StreamReader(context.Request.Body).ReadToEndAsync();
+        context.Request.Body.Position = 0;
+        if (!string.IsNullOrEmpty(body))
+        {
+            Console.WriteLine($"📦 Request Body: {body}");
+        }
+    }
+    await next();
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -178,9 +200,12 @@ app.MapPost("/login", async (ToDoDbContext db, LoginRequest login) =>
         Console.WriteLine($"✅ Login successful for user: {login.Username}, Token generated: {!string.IsNullOrEmpty(jwt)}");
         
         var response = new { token = jwt };
-        Console.WriteLine($"📤 Sending response: {System.Text.Json.JsonSerializer.Serialize(response)}");
+        var jsonResponse = System.Text.Json.JsonSerializer.Serialize(response);
+        Console.WriteLine($"📤 Sending response: {jsonResponse}");
+        Console.WriteLine($"📤 Response length: {jsonResponse.Length} bytes");
         
-        return Results.Ok(response);
+        // החזר עם Content-Type מפורש
+        return Results.Json(response, statusCode: 200, contentType: "application/json");
     }
     catch (Exception ex)
     {

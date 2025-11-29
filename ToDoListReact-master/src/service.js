@@ -43,9 +43,9 @@ export default {
   // =====================
   register: async (username, password) => {
     try {
-      const fullUrl = API_URL + '/register';
-      console.log('🔵 REGISTER - API_URL:', API_URL);
-      console.log('🔵 REGISTER - Full URL:', fullUrl);
+      // CRITICAL: שימוש ב-URL ישיר ללא משתנה
+      const fullUrl = 'https://todoapis-qdh6.onrender.com/register';
+      console.log('🔵 REGISTER - Full URL (hardcoded):', fullUrl);
       console.log('🔵 REGISTER - Username:', username);
       console.log('🔵 REGISTER - Payload:', { username, passwordHash: password });
       
@@ -130,9 +130,9 @@ export default {
   // =====================
   getTasks: async () => {
     try {
-      const fullUrl = API_URL + '/tasks';
-      console.log('🔵 GET TASKS - API_URL:', API_URL);
-      console.log('🔵 GET TASKS - Full URL:', fullUrl);
+      // CRITICAL: שימוש ב-URL ישיר ללא משתנה
+      const fullUrl = 'https://todoapis-qdh6.onrender.com/tasks';
+      console.log('🔵 GET TASKS - Full URL (hardcoded):', fullUrl);
       const token = localStorage.getItem('jwt');
       console.log('🔵 GET TASKS - Has token:', !!token);
       
@@ -167,9 +167,9 @@ export default {
   
   addTask: async (name) => {
     try {
-      const fullUrl = API_URL + '/tasks';
-      console.log('🔵 ADD TASK - API_URL:', API_URL);
-      console.log('🔵 ADD TASK - Full URL:', fullUrl);
+      // CRITICAL: שימוש ב-URL ישיר ללא משתנה
+      const fullUrl = 'https://todoapis-qdh6.onrender.com/tasks';
+      console.log('🔵 ADD TASK - Full URL (hardcoded):', fullUrl);
       console.log('🔵 ADD TASK - Task name:', name);
       console.log('🔵 ADD TASK - Payload:', { name, isComplete: false });
       
@@ -189,7 +189,9 @@ export default {
 
   setCompleted: async (id, name, isComplete) => {
     try {
-      const result = await axios.put(`${API_URL}/tasks/${id}`, { id, name, isComplete }, getConfig());
+      // CRITICAL: שימוש ב-URL ישיר ללא משתנה
+      const fullUrl = `https://todoapis-qdh6.onrender.com/tasks/${id}`;
+      const result = await axios.put(fullUrl, { id, name, isComplete }, getConfig());
       return result.data;
     } catch (error) {
       handleError(error);
@@ -198,7 +200,9 @@ export default {
 
   deleteTask: async (id) => {
     try {
-      await axios.delete(`${API_URL}/tasks/${id}`, getConfig());
+      // CRITICAL: שימוש ב-URL ישיר ללא משתנה
+      const fullUrl = `https://todoapis-qdh6.onrender.com/tasks/${id}`;
+      await axios.delete(fullUrl, getConfig());
     } catch (error) {
       handleError(error);
     }
