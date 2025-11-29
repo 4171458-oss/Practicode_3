@@ -1,6 +1,6 @@
-import axios from 'axios';
+import apiClient from './axiosConfig.js';
 
-// CRITICAL FIX: שימוש ב-URL ישיר בכל מקום - בלי משתנה כלל
+// CRITICAL FIX: שימוש ב-axiosConfig שכבר קיים עם baseURL מוגדר
 // זה מבטיח שה-URL תמיד נטמע ב-build
 
 // פונקציה עזר ליצירת config עם JWT
@@ -36,12 +36,12 @@ export default {
   // =====================
   register: async (username, password) => {
     try {
-      const fullUrl = 'https://todoapis-qdh6.onrender.com/register';
-      console.log('🔵 REGISTER - Full URL:', fullUrl);
+      console.log('🔵 REGISTER - baseURL:', apiClient.defaults.baseURL);
+      console.log('🔵 REGISTER - Full URL will be:', apiClient.defaults.baseURL + '/register');
       console.log('🔵 REGISTER - Username:', username);
       console.log('🔵 REGISTER - Payload:', { username, passwordHash: password });
       
-      const result = await axios.post(fullUrl, { username, passwordHash: password }, getConfig());
+      const result = await apiClient.post('/register', { username, passwordHash: password });
       
       console.log('🟢 REGISTER - Success! Response:', result.data);
       console.log('🟢 REGISTER - Status:', result.status);
@@ -57,12 +57,12 @@ export default {
 
   login: async (username, password) => {
     try {
-      const fullUrl = 'https://todoapis-qdh6.onrender.com/login';
-      console.log('🔵 LOGIN - Full URL:', fullUrl);
+      console.log('🔵 LOGIN - baseURL:', apiClient.defaults.baseURL);
+      console.log('🔵 LOGIN - Full URL will be:', apiClient.defaults.baseURL + '/login');
       console.log('🔵 LOGIN - Username:', username);
       console.log('🔵 LOGIN - Payload:', { username, password: '***' });
       
-      const result = await axios.post(fullUrl, { username, password }, getConfig());
+      const result = await apiClient.post('/login', { username, password });
       
       console.log('🟢 LOGIN - Success! Status:', result.status);
       console.log('🟢 LOGIN - Response headers:', result.headers);
@@ -118,12 +118,12 @@ export default {
   // =====================
   getTasks: async () => {
     try {
-      const fullUrl = 'https://todoapis-qdh6.onrender.com/tasks';
-      console.log('🔵 GET TASKS - Full URL:', fullUrl);
+      console.log('🔵 GET TASKS - baseURL:', apiClient.defaults.baseURL);
+      console.log('🔵 GET TASKS - Full URL will be:', apiClient.defaults.baseURL + '/tasks');
       const token = localStorage.getItem('jwt');
       console.log('🔵 GET TASKS - Has token:', !!token);
       
-      const result = await axios.get(fullUrl, getConfig());
+      const result = await apiClient.get('/tasks');
       
       console.log('🟢 GET TASKS - Success! Status:', result.status);
       console.log('🟢 GET TASKS - Data type:', Array.isArray(result.data) ? 'Array' : typeof result.data);
@@ -154,12 +154,12 @@ export default {
   
   addTask: async (name) => {
     try {
-      const fullUrl = 'https://todoapis-qdh6.onrender.com/tasks';
-      console.log('🔵 ADD TASK - Full URL:', fullUrl);
+      console.log('🔵 ADD TASK - baseURL:', apiClient.defaults.baseURL);
+      console.log('🔵 ADD TASK - Full URL will be:', apiClient.defaults.baseURL + '/tasks');
       console.log('🔵 ADD TASK - Task name:', name);
       console.log('🔵 ADD TASK - Payload:', { name, isComplete: false });
       
-      const result = await axios.post(fullUrl, { name, isComplete: false }, getConfig());
+      const result = await apiClient.post('/tasks', { name, isComplete: false });
       
       console.log('🟢 ADD TASK - Success! Status:', result.status);
       console.log('🟢 ADD TASK - Created task:', result.data);
@@ -175,7 +175,7 @@ export default {
 
   setCompleted: async (id, name, isComplete) => {
     try {
-      const result = await axios.put(`https://todoapis-qdh6.onrender.com/tasks/${id}`, { id, name, isComplete }, getConfig());
+      const result = await apiClient.put(`/tasks/${id}`, { id, name, isComplete });
       return result.data;
     } catch (error) {
       handleError(error);
@@ -184,7 +184,7 @@ export default {
 
   deleteTask: async (id) => {
     try {
-      await axios.delete(`https://todoapis-qdh6.onrender.com/tasks/${id}`, getConfig());
+      await apiClient.delete(`/tasks/${id}`);
     } catch (error) {
       handleError(error);
     }
