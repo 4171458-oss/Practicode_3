@@ -1,30 +1,29 @@
 import axios from 'axios';
 
-// לוקח את כתובת ה־API מה־Environment של Render
-// ב-Render Static Site, משתני סביבה לא תמיד מועברים ל-Build
-// לכן משתמשים בערך ישיר ישירות ב-baseURL
-const API_URL = process.env.REACT_APP_API_URL || 'https://todoapis-qdh6.onrender.com';
+// קריאת ה-API URL מקובץ config ב-public (לא עובר minification)
+// משתמשים ב-URL ישיר כ-default, ואז מעדכנים מה-config.json
+const DEFAULT_API_URL = 'https://todoapis-qdh6.onrender.com';
 
-// Debug logs
-console.log("=== API CONFIG DEBUG ===");
-console.log("API_URL constant:", API_URL);
-console.log("REACT_APP_API_URL from env:", process.env.REACT_APP_API_URL);
-console.log("Final API URL:", API_URL);
-console.log("========================");
-
-// יוצר מופע axios עם baseURL קבוע לשרת של ה־API
-// CRITICAL FIX: שימוש ב-URL ישיר - webpack לא יכול למחוק string literal
-const API_BASE_URL_HARDCODED = 'https://todoapis-qdh6.onrender.com';
+// יוצר מופע axios עם baseURL (Config Defaults)
 const instance = axios.create({
-  baseURL: API_BASE_URL_HARDCODED,
+  baseURL: DEFAULT_API_URL,
   headers: {
     "Content-Type": "application/json"
   }
 });
 
-// Debug - וידוא שה-baseURL נטמע
-console.log('🔧 AXIOS CONFIG - baseURL:', instance.defaults.baseURL);
-console.log('🔧 AXIOS CONFIG - API_BASE_URL_HARDCODED:', API_BASE_URL_HARDCODED);
+// עדכון ה-baseURL מה-config.json בזמן ריצה
+(async () => {
+  try {
+    const response = await fetch('/config.json');
+    const config = await response.json();
+    if (config.API_URL) {
+      instance.defaults.baseURL = config.API_URL;
+    }
+  } catch (error) {
+    // Using default URL
+  }
+})();
 
 // מזריק אוטומטית את ה־JWT לכל בקשה
 instance.interceptors.request.use((config) => {

@@ -1,47 +1,4 @@
-import axios from 'axios';
-
-// CRITICAL FIX: קריאת ה-API URL מקובץ config ב-public
-// קבצים ב-public לא עוברים minification, אז ה-URL יישמר
-let API_BASE_URL = 'https://todoapis-qdh6.onrender.com';
-
-// קריאת ה-config בזמן ריצה (לא בזמן build)
-(async () => {
-  try {
-    const response = await fetch('/config.json');
-    const config = await response.json();
-    if (config.API_URL) {
-      API_BASE_URL = config.API_URL;
-    }
-  } catch (error) {
-    // Using default URL
-  }
-})();
-
-// פונקציה עזר ליצירת config עם JWT
-const getConfig = () => {
-  const token = localStorage.getItem('jwt');
-  const config = {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  };
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-};
-
-// פונקציה עזר לטיפול בשגיאות
-const handleError = (error) => {
-  console.error('API Error:', error.response?.data || error.message);
-  if (error.response && error.response.status === 401) {
-    localStorage.removeItem('jwt');
-    if (window.location.pathname !== '/') {
-      window.location.href = '/';
-    }
-  }
-  throw error;
-};
+import apiClient from './axiosConfig';
 
 
 export default {
@@ -50,24 +7,16 @@ export default {
   // =====================
   register: async (username, password) => {
     try {
-      const configResponse = await fetch('/config.json');
-      const config = await configResponse.json();
-      const apiUrl = config.API_URL || 'https://todoapis-qdh6.onrender.com';
-      
-      const result = await axios.post(`${apiUrl}/register`, { username, passwordHash: password }, getConfig());
+      const result = await apiClient.post('/register', { username, passwordHash: password });
       return result.data;
     } catch (error) {
-      handleError(error);
+      throw error;
     }
   },
 
   login: async (username, password) => {
     try {
-      const configResponse = await fetch('/config.json');
-      const config = await configResponse.json();
-      const apiUrl = config.API_URL || 'https://todoapis-qdh6.onrender.com';
-      
-      const result = await axios.post(`${apiUrl}/login`, { username, password }, getConfig());
+      const result = await apiClient.post('/login', { username, password });
       
       if (typeof result.data === 'string' && result.data.trim() !== '') {
         try {
@@ -89,7 +38,7 @@ export default {
       localStorage.setItem('jwt', token);
       return token;
     } catch (error) {
-      handleError(error);
+      throw error;
     }
   },
 
@@ -102,20 +51,12 @@ export default {
   // =====================
   getTasks: async () => {
     try {
-      const configResponse = await fetch('/config.json');
-      const config = await configResponse.json();
-      const apiUrl = config.API_URL || 'https://todoapis-qdh6.onrender.com';
-      
-      const result = await axios.get(`${apiUrl}/tasks`, getConfig());
-      
+      const result = await apiClient.get('/tasks');
       if (Array.isArray(result.data)) {
         return result.data;
       }
       return [];
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        localStorage.removeItem('jwt');
-      }
       throw error;
     }
   },
@@ -123,39 +64,27 @@ export default {
   
   addTask: async (name) => {
     try {
-      const configResponse = await fetch('/config.json');
-      const config = await configResponse.json();
-      const apiUrl = config.API_URL || 'https://todoapis-qdh6.onrender.com';
-      
-      const result = await axios.post(`${apiUrl}/tasks`, { name, isComplete: false }, getConfig());
+      const result = await apiClient.post('/tasks', { name, isComplete: false });
       return result.data;
     } catch (error) {
-      handleError(error);
+      throw error;
     }
   },
 
   setCompleted: async (id, name, isComplete) => {
     try {
-      const configResponse = await fetch('/config.json');
-      const config = await configResponse.json();
-      const apiUrl = config.API_URL || 'https://todoapis-qdh6.onrender.com';
-      
-      const result = await axios.put(`${apiUrl}/tasks/${id}`, { id, name, isComplete }, getConfig());
+      const result = await apiClient.put(`/tasks/${id}`, { id, name, isComplete });
       return result.data;
     } catch (error) {
-      handleError(error);
+      throw error;
     }
   },
 
   deleteTask: async (id) => {
     try {
-      const configResponse = await fetch('/config.json');
-      const config = await configResponse.json();
-      const apiUrl = config.API_URL || 'https://todoapis-qdh6.onrender.com';
-      
-      await axios.delete(`${apiUrl}/tasks/${id}`, getConfig());
+      await apiClient.delete(`/tasks/${id}`);
     } catch (error) {
-      handleError(error);
+      throw error;
     }
   }
 };

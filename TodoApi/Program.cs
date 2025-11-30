@@ -80,11 +80,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// Swagger available in all environments
+app.UseSwagger();
+app.UseSwaggerUI();
 
 // =====================
 // Tasks endpoints
