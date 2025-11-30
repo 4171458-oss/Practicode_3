@@ -13,13 +13,18 @@ console.log("Final API URL:", API_URL);
 console.log("========================");
 
 // יוצר מופע axios עם baseURL קבוע לשרת של ה־API
-// שימוש ישיר ב-URL כדי לוודא שהוא נטמע ב-Build
+// CRITICAL FIX: שימוש ב-URL ישיר - webpack לא יכול למחוק string literal
+const API_BASE_URL_HARDCODED = 'https://todoapis-qdh6.onrender.com';
 const instance = axios.create({
-  baseURL: 'https://todoapis-qdh6.onrender.com',
+  baseURL: API_BASE_URL_HARDCODED,
   headers: {
     "Content-Type": "application/json"
   }
 });
+
+// Debug - וידוא שה-baseURL נטמע
+console.log('🔧 AXIOS CONFIG - baseURL:', instance.defaults.baseURL);
+console.log('🔧 AXIOS CONFIG - API_BASE_URL_HARDCODED:', API_BASE_URL_HARDCODED);
 
 // מזריק אוטומטית את ה־JWT לכל בקשה
 instance.interceptors.request.use((config) => {
